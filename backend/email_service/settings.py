@@ -104,7 +104,6 @@ REST_FRAMEWORK = {
 
 # Composio settings
 COMPOSIO_API_KEY = os.getenv('COMPOSIO_API_KEY')
-COMPOSIO_AUTH_CONFIG_ID = os.getenv('COMPOSIO_AUTH_CONFIG_ID')
 WEBHOOK_BASE_URL = os.getenv('WEBHOOK_BASE_URL', 'http://localhost:8000')
 
 # Validate required settings

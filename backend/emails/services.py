@@ -16,7 +16,6 @@ class ComposioService:
     
     def __init__(self):
         self.api_key = settings.COMPOSIO_API_KEY
-        self.auth_config_id = settings.COMPOSIO_AUTH_CONFIG_ID
         self._client = None
         self._toolset = None
     

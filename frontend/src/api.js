@@ -38,13 +38,10 @@ export const api = {
       method: 'POST', 
       body: JSON.stringify({ user_id: userId }) 
     }),
-  completeConnection: (userId, connectedAccountId) =>
+  completeConnection: (userId = 'default-user') =>
     request('/connect/complete/', {
       method: 'POST',
-      body: JSON.stringify({ 
-        user_id: userId, 
-        connected_account_id: connectedAccountId 
-      }),
+      body: JSON.stringify({ user_id: userId }),
     }),
   
   // Sync

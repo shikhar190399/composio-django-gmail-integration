@@ -30,21 +30,12 @@ cd ../frontend
 npm install
 ```
 
-### 2. Create Composio Auth Config
-
-1. Go to [Composio Dashboard](https://app.composio.dev)
-2. Navigate to **Auth Configs** → **Create Auth Config**
-3. Select **Gmail** toolkit
-4. Choose **OAuth2** authentication
-5. Configure scopes (gmail.readonly, gmail.modify)
-6. Click **Create** and copy the **Auth Config ID**
-
-### 3. Get Composio API Key
+### 2. Get Composio API Key
 
 1. Go to [Composio Settings](https://app.composio.dev/settings)
 2. Copy your **API Key**
 
-### 4. Configure Environment
+### 3. Configure Environment
 
 Create a `.env` file in the `backend/` directory:
 
@@ -53,22 +44,16 @@ cd backend
 cp ../env.example .env
 ```
 
-Edit `.env` with your values:
+Edit `.env` with your API key:
 
 ```env
 COMPOSIO_API_KEY=your_api_key_here
-COMPOSIO_AUTH_CONFIG_ID=your_auth_config_id_here
-DJANGO_SECRET_KEY=generate-a-random-secret-key
+DJANGO_SECRET_KEY=dev-secret-key-for-local-development-only
 DEBUG=True
 WEBHOOK_BASE_URL=http://localhost:8000
 ```
 
-> **Tip:** Generate a Django secret key:
-> ```bash
-> python3 -c "import secrets; print(secrets.token_urlsafe(50))"
-> ```
-
-### 5. Initialize Database
+### 4. Initialize Database
 
 ```bash
 cd backend
@@ -76,7 +61,7 @@ source venv/bin/activate
 python manage.py migrate
 ```
 
-### 6. Run the Application
+### 5. Run the Application
 
 **Terminal 1 - Backend:**
 ```bash
@@ -91,27 +76,16 @@ cd frontend
 npm run dev
 ```
 
-### 7. Connect Gmail
+### 6. Connect Gmail
 
 1. Open http://localhost:5173
-2. Click **Connect Gmail**
+2. Click **Connect Gmail** → A popup opens
 3. Complete Google OAuth in the popup
-4. Get your `connected_account_id` from Composio:
-   ```bash
-   # In backend directory with venv activated
-   python -c "
-   from composio import Composio
-   import os
-   from dotenv import load_dotenv
-   load_dotenv()
-   c = Composio(api_key=os.getenv('COMPOSIO_API_KEY'))
-   entity = c.get_entity('default-user')
-   conn = entity.get_connection(app='gmail')
-   print(f'Connected Account ID: {conn.id}')
-   "
-   ```
-5. Click **Complete Connection** and paste the ID
+4. Close the popup when done
+5. Click **Complete Connection** (auto-detects your Gmail)
 6. Click **Sync** to fetch emails
+
+That's it! No manual IDs needed.
 
 ## For Real-Time Webhooks (Optional)
 

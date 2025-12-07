@@ -66,23 +66,28 @@ function App() {
   async function handleConnect() {
     try {
       const result = await api.initiateConnection()
-      window.open(result.redirect_url, '_blank', 'width=600,height=700')
-      alert('Complete the Gmail authorization in the popup, then click "Complete Connection"')
+      // Open OAuth popup
+      const popup = window.open(result.redirect_url, '_blank', 'width=600,height=700')
+      
+      // Show instructions
+      alert('Complete the Gmail authorization in the popup.\n\nOnce done, close the popup and click "Complete Connection".')
     } catch (err) {
       setError(err.message)
     }
   }
 
   async function handleCompleteConnection() {
-    const accountId = prompt('Enter the connected_account_id from Composio:')
-    if (!accountId) return
-    
     try {
-      await api.completeConnection('default-user', accountId)
+      // Auto-detect connection from Composio (no manual input needed!)
+      const result = await api.completeConnection('default-user')
       await loadData()
-      alert('Connection completed! Trigger enabled.')
+      alert('✅ Connection completed! You can now sync emails.')
     } catch (err) {
-      setError(err.message)
+      if (err.message.includes('not connected yet')) {
+        setError('Please complete the Gmail authorization first, then try again.')
+      } else {
+        setError(err.message)
+      }
     }
   }
 

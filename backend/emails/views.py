@@ -143,26 +143,32 @@ def initiate_connection(request):
 def complete_connection(request):
     """
     Complete the connection and enable email trigger.
+    Auto-detects the connected account from Composio.
     
     POST /api/connect/complete/
-    Body: {"user_id": "...", "connected_account_id": "..."}
+    Body: {"user_id": "..."}
     """
     user_id = request.data.get("user_id", "default-user")
-    connected_account_id = request.data.get("connected_account_id")
-    
-    if not connected_account_id:
-        return Response(
-            {"error": "connected_account_id is required"},
-            status=status.HTTP_400_BAD_REQUEST
-        )
     
     try:
         service = ComposioService()
         
+        # Auto-detect the connected account from Composio
+        connection_info = service.get_connection(user_id, "gmail")
+        
+        if not connection_info:
+            return Response(
+                {"error": "Gmail not connected yet. Please complete the OAuth flow first."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        # Get the connected account ID
+        connected_account_id = getattr(connection_info, 'id', None) or str(connection_info)
+        
         # Build webhook URL
         webhook_url = f"{settings.WEBHOOK_BASE_URL}/api/webhook/email/"
         
-        # Enable the email trigger (uses user_id/entity_id)
+        # Enable the email trigger
         trigger_result = service.enable_email_trigger(user_id, webhook_url)
         
         # Update connection record
@@ -178,6 +184,7 @@ def complete_connection(request):
         
         return Response({
             "status": "connected",
+            "connected_account_id": connected_account_id,
             "trigger_id": trigger_result.get("trigger_id"),
             "webhook_url": webhook_url,
         })
